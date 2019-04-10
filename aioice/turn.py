@@ -138,7 +138,10 @@ class TurnClientMixin:
         request = stun.Message(message_method=stun.Method.REFRESH,
                                message_class=stun.Class.REQUEST)
         request.attributes['LIFETIME'] = 0
-        await self.request(request)
+        try:
+            await self.request(request)
+        except exceptions.TransactionFailed:
+            logger.debug('the turn allocation deletion request failed')
 
         logger.info('TURN allocation deleted %s', self.relayed_address)
         if self.receiver:
